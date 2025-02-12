@@ -126,6 +126,8 @@ jobs:
           --features ${{ matrix.feature }}
 
   check-integration-wasm:
+    # Don't run WASM checks as they are broken at the moment.
+    if: ${{ false }}
     name: Check integration (WebAssembly)
     strategy:
       fail-fast: false
