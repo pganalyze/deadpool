@@ -16,8 +16,8 @@ manager for [`redis`](https://crates.io/crates/redis).
 | `cluster`        | Enable support for Redis Cluster                                      | `redis/cluster-async`                             | no      |
 | `sentinel`       | Enable high-level interfaces for communication with Redis sentinels   | `redis/sentinel`, `tokio/sync`                    | no      |
 
-All of the features of [redis](https://crates.io/crates/redis) are also reexposed with a `redis-` prefix.
-For example, the feature `redis-tls-rustls` is using `redis/tls-rustls`.
+All of the features of [redis](https://crates.io/crates/redis) are also re-exported.
+For example, the feature `tls-rustls` does enable the feature `tls-rustls` from the `redis` crate.
 
 ## Example
 
