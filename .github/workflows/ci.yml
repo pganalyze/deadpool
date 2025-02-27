@@ -262,14 +262,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - deadpool_member: redis
-          crate_name: redis
-        - deadpool_member: postgres
-          crate_name: tokio_postgres
-        - deadpool_member: lapin
-          crate_name: lapin
-        - deadpool_member: sqlite
-          crate_name: rusqlite
+        include:
+          - deadpool_member: redis
+            crate_name: redis
+          - deadpool_member: postgres
+            crate_name: tokio_postgres
+          - deadpool_member: lapin
+            crate_name: lapin
+          - deadpool_member: sqlite
+            crate_name: rusqlite
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
