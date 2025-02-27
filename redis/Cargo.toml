@@ -47,6 +47,7 @@ sentinel = ["redis/sentinel", "dep:tokio", "tokio/sync"]
 tcp_nodelay = ["redis/tcp_nodelay"]
 num-bigint = ["redis/num-bigint"]
 disable-client-setinfo = ["redis/disable-client-setinfo"]
+cache-aio = ["redis/cache-aio"]
 
 [dependencies]
 deadpool = { path = "../", version = "0.12.0", default-features = false, features = [
