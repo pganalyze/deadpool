@@ -2,7 +2,8 @@ use std::{collections::HashMap, env, time::Duration};
 
 use futures::future;
 use serde::{Deserialize, Serialize};
-use tokio_postgres::{types::Type, IsolationLevel};
+use tokio::time;
+use tokio_postgres::{binary_copy::BinaryCopyInWriter, types::Type, IsolationLevel};
 
 use deadpool_postgres::{ManagerConfig, Pool, RecyclingMethod, Runtime};
 
@@ -305,4 +306,38 @@ fn config_url() {
             ]
         );
     }
+}
+
+#[tokio::test]
+async fn copy_in() {
+    let pool = create_pool();
+    let client = pool.get().await.unwrap();
+    client
+        .batch_execute(
+            "CREATE TEMPORARY TABLE foo (
+                id INTEGER,
+                name TEXT
+            )",
+        )
+        .await
+        .unwrap();
+
+    let result = time::timeout(time::Duration::from_millis(1000), async {
+        let sql = "COPY foo (id, name) FROM STDIN BINARY";
+        let types = &[Type::INT4, Type::TEXT];
+        let writer = BinaryCopyInWriter::new(client.copy_in(sql).await.unwrap(), types);
+        futures::pin_mut!(writer);
+        writer.as_mut().write(&[&1, &"a"]).await.unwrap();
+        time::sleep(time::Duration::from_millis(2000)).await;
+    })
+    .await;
+    assert!(result.is_err());
+
+    let rows = client
+        .query("SELECT id, name FROM foo ORDER BY id", &[])
+        .await
+        .unwrap();
+    assert_eq!(rows.len(), 0);
+
+    time::sleep(time::Duration::from_millis(20_000)).await;
 }
